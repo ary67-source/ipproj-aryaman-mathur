@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Event Manager</title>
+  <style>
+    body { font-family: Arial; margin: 30px; background: #f2f2f2; }
+    h1 { color: #333; }
+    input, textarea { width: 100%; margin: 5px 0; padding: 8px; }
+    button { padding: 8px 15px; margin-right: 5px; }
+    .event { background: white; padding: 10px; margin: 10px 0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🗓️ Event Management System</h1>
+
+  <div>
+    <input id="title" placeholder="Event Title" />
+    <textarea id="description" placeholder="Event Description"></textarea>
+    <input id="date" type="date" />
+    <input id="time" type="time" />
+    <button onclick="addEvent()">Save Event</button>
+  </div>
+
+  <h2>All Events</h2>
+  <div id="eventList"></div>
+
+  <script>
+    const eventList = document.getElementById('eventList');
+    const API = '/events';
+    let editingId = null;
+
+    async function loadEvents() {
+      const res = await fetch(API);
+      const data = await res.json();
+      eventList.innerHTML = '';
+      data.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'event';
+        div.innerHTML = `
+          <h3>${ev.title}</h3>
+          <p>${ev.description}</p>
+          <p><b>${ev.date}</b> at <b>${ev.time}</b></p>
+          <button onclick="editEvent(${ev.id})">Edit</button>
+          <button onclick="deleteEvent(${ev.id})">Delete</button>
+        `;
+        eventList.appendChild(div);
+      });
+    }
+
+    async function addEvent() {
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+
+      if (!title || !date || !time) return alert('Please fill all fields!');
+
+      const payload = { title, description, date, time };
+
+      if (editingId) {
+        await fetch(`${API}/${editingId}`, {
+          method: 'PUT', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        editingId = null;
+      } else {
+        await fetch(API, {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+      }
+
+      document.getElementById('title').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('time').value = '';
+      loadEvents();
+    }
+
+    async function editEvent(id) {
+      const res = await fetch(API);
+      const events = await res.json();
+      const ev = events.find(e => e.id === id);
+      document.getElementById('title').value = ev.title;
+      document.getElementById('description').value = ev.description;
+      document.getElementById('date').value = ev.date;
+      document.getElementById('time').value = ev.time;
+      editingId = id;
+    }
+
+    async function deleteEvent(id) {
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      loadEvents();
+    }
+
+    loadEvents();
+  </script>
+</body>
+</html>
