@@ -1,29 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Simple Event Manager</title>
+  <meta charset="UTF-8">
+  <title>Event Manager</title>
   <style>
-    body { font-family: Arial; margin: 30px; background: #f2f2f2; }
-    h1 { color: #333; }
-    input, textarea { width: 100%; margin: 5px 0; padding: 8px; }
-    button { padding: 8px 15px; margin-right: 5px; }
-    .event { background: white; padding: 10px; margin: 10px 0; border-radius: 8px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+    }
+
+    main {
+      width: 100%;
+      max-width: 800px;
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      color: #4b6cff;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0 15px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #ff6a6a;
+      box-shadow: 0 0 8px rgba(255,106,106,0.3);
+    }
+
+    button {
+      cursor: pointer;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.3s;
+      margin-right: 10px;
+    }
+
+    button.save {
+      background: linear-gradient(45deg, #ff6a6a, #ffb347);
+    }
+
+    button.save:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(255,106,106,0.4);
+    }
+
+    button.edit {
+      background: linear-gradient(45deg, #42e695, #3bb2b8);
+    }
+
+    button.edit:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(66,230,149,0.4);
+    }
+
+    button.delete {
+      background: linear-gradient(45deg, #ff4b1f, #ff9068);
+    }
+
+    button.delete:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(255,75,31,0.4);
+    }
+
+    .event {
+      background: linear-gradient(120deg, #fff1f0, #f0fff7);
+      padding: 20px;
+      border-radius: 15px;
+      margin: 15px 0;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .event:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .event-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ff6a6a;
+    }
+
+    .event-desc {
+      margin: 8px 0;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .event-time {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .btn-group {
+      text-align: right;
+    }
+
   </style>
 </head>
 <body>
-  <h1>🗓️ Event Management System</h1>
+  <header>🎉 Event Manager</header>
 
-  <div>
-    <input id="title" placeholder="Event Title" />
-    <textarea id="description" placeholder="Event Description"></textarea>
-    <input id="date" type="date" />
-    <input id="time" type="time" />
-    <button onclick="addEvent()">Save Event</button>
-  </div>
+  <main>
+    <div>
+      <input id="title" placeholder="Event Title" />
+      <textarea id="description" placeholder="Event Description"></textarea>
+      <input id="date" type="date" />
+      <input id="time" type="time" />
+      <button class="save" onclick="addEvent()">Save Event</button>
+    </div>
 
-  <h2>All Events</h2>
-  <div id="eventList"></div>
+    <h2>All Events</h2>
+    <div id="eventList"></div>
+  </main>
 
   <script>
     const eventList = document.getElementById('eventList');
@@ -38,11 +163,13 @@
         const div = document.createElement('div');
         div.className = 'event';
         div.innerHTML = `
-          <h3>${ev.title}</h3>
-          <p>${ev.description}</p>
-          <p><b>${ev.date}</b> at <b>${ev.time}</b></p>
-          <button onclick="editEvent(${ev.id})">Edit</button>
-          <button onclick="deleteEvent(${ev.id})">Delete</button>
+          <div class="event-title">${ev.title}</div>
+          <div class="event-desc">${ev.description}</div>
+          <div class="event-time"><b>${ev.date}</b> at <b>${ev.time}</b></div>
+          <div class="btn-group">
+            <button class="edit" onclick="editEvent(${ev.id})">Edit</button>
+            <button class="delete" onclick="deleteEvent(${ev.id})">Delete</button>
+          </div>
         `;
         eventList.appendChild(div);
       });
